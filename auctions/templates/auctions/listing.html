@@ -10,10 +10,18 @@
                     </button>
                 </a>     
             {% else %}
-                <button>
-                    Remove from watchlist
-                </button>
+                <a href="{% url 'watchlist' listing.id %}">
+                    <button>
+                        Remove from watchlist
+                    </button>
+                </a>
             {% endif %}
+        {% elif user.is_authenticated and listing.user.id == user.id %}
+            <a href="">
+                <button>
+                    Close Auction
+                </button>
+            </a>
         {% endif %}
     </div>
     <div>
@@ -28,5 +36,27 @@
     </div>
     <div>
         <strong>{{listing.bid}}</strong>
+    </div>
+    {% if user.is_authenticated %}
+        <div>
+            <form action="{% url 'listing' listing.category listing.id %}" method="POST">
+                {% csrf_token %}
+                {{commentForm.as_ul}}
+                <button type="submit" class="btn btn-primary">Submit</button>
+            </form>
+        </div>
+    {% endif %}
+    <div>
+        <ul>
+            {% for comment in comments %}
+                <li>
+                    {{comment.comment}}
+                    {{comment.user}}
+                    {{comment.date}}
+                </li>
+            {% empty %}
+            No comments yet
+            {% endfor %}
+        </ul>
     </div>
 {%  endblock %}

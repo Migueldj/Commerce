@@ -5,7 +5,7 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import Listing, User, Category
+from .models import Commentary, Listing, User, Category
 from django.forms import ModelForm # lo importé para hacer un form a partir de un model definido
 from django.contrib.auth.decorators import login_required # lo importé para que solo usuarios registrados accesen a cierta vista
 
@@ -98,8 +98,20 @@ def create(request):
 def watchlist(request, listing_id):
     user = request.user
     listing = Listing.objects.get(pk=listing_id)
-    user.UserWatchlist.add(listing)
-    return HttpResponseRedirect(reverse("index"))
+    if user.userWatchlist.filter(pk=listing.id).exists():
+        user.userWatchlist.remove(listing)
+    else:
+        user.userWatchlist.add(listing)
+    return HttpResponseRedirect(reverse("listing", kwargs={'category_name':listing.category,'listing_id':listing.id}))
+
+@login_required(login_url='login')
+def watchlist_view(request):
+    user = request.user
+    watchlist = user.userWatchlist.all()
+    return render(request, "auctions/userWatchlist.html",{
+        'userWatchlist':watchlist,
+    })
+
 
 def categories(request):
     categories = Category.objects.all()
@@ -115,13 +127,47 @@ def categoryListings(request, category_name):
         "listings": listings,
     })
 
+
+
+class CommentaryForm(ModelForm):
+    class Meta:
+        model = Commentary
+        fields = ['comment']
+
 def listing(request,category_name,listing_id):
     listing = Listing.objects.get(pk = listing_id)
-    user = request.user
-    watchlistBool = False
+    user = request.user.id
+    watchlistBool=False
+    comments = listing.Comments.all()
+    if User.objects.filter(pk=user).exists():
+        userLogged = request.user
+        if userLogged.userWatchlist.filter(pk=listing.id).exists():
+            watchlistBool = True
+        else:
+            watchlistBool = False
+        if request.method == 'POST': 
+            commentForm = CommentaryForm(request.POST)
+            if commentForm.is_valid():
+                newComment = commentForm.save(commit=False)
+                newComment.user = request.user
+                newComment.listing = listing
+                newComment.save()
+                return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id})) 
+            else:
+                return render(request, "auctions/listing.html",{
+                    "commentForm":commentForm,
+                })
+    else:
+        return render(request, "auctions/listing.html",{
+        "listing":listing,
+        "comments":comments,
+        })
+
     return render(request, "auctions/listing.html",{
         "listing":listing,
         "onWatchlist":watchlistBool,
+        "commentForm": CommentaryForm(),
+        "comments":comments,
     })
 
 @login_required(login_url = 'login')  

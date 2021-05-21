@@ -1,3 +1,4 @@
+from django.db.models.fields import related
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.deletion import CASCADE
@@ -7,7 +8,7 @@ from django.utils import tree
 
 
 class User(AbstractUser):
-    pass
+    userWatchlist = models.ManyToManyField("Listing", null=True, blank=True, related_name="UserWatchlist")
 
 class Category(models.Model):
     options = models.CharField(max_length=64)
@@ -17,6 +18,12 @@ class Category(models.Model):
 
 class Commentary(models.Model):
     comment = models.CharField(max_length = 100)
+    user = models.ForeignKey(User, null = True, blank = True, on_delete=CASCADE)
+    date = models.DateTimeField(auto_now=True)
+    listing = models.ForeignKey("Listing", null=True, on_delete=CASCADE, related_name="Comments")
+
+    def __str__(self):
+        return f"User: {self.user} Date: {self.date} Listing: {self.listing} Comment: {self.comment}"
 
 class Listing(models.Model):
     title = models.CharField(max_length=64, null = True)
@@ -25,9 +32,7 @@ class Listing(models.Model):
     imageURL = models.URLField()
     bid = models.IntegerField()
     user = models.ForeignKey(User, null = True, on_delete=CASCADE, related_name= "UserListings")
-    comments = models.ManyToManyField(Commentary, null = True, blank = True, related_name = "ListingComments")
     active = models.BooleanField(default = True)
-    usersWatchlist = models.ManyToManyField(User, null=True, blank=True, related_name="UserWatchlist")
 
     def __str__(self):
         return self.title

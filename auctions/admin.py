@@ -1,7 +1,11 @@
 from django.contrib import admin
-from .models import Category, Listing, User
+from .models import Category, Commentary, Listing, User
 # Register your models here.
 
-admin.site.register(User) # lo agregué para poder modificar usuarios desde admin
+class UserAdmin(admin.ModelAdmin):
+    filter_horizontal = ("userWatchlist",)
+
+admin.site.register(User,UserAdmin) # lo agregué para poder modificar usuarios desde admin
 admin.site.register(Listing)
 admin.site.register(Category)
+admin.site.register(Commentary)
