@@ -6,7 +6,7 @@
         <ul>
             {% for list in listings %}
             <li>
-                <a href="{% url 'listing' category.id list.id %}"><strong>{{list.title}}</strong></a>
+                <a href="{% url 'listing' category.options list.id %}"><strong>{{list.title}}</strong></a>
                 <img src="{{list.imageURL}}" alt="Product Image" height="200px" width="px">
                 {{list.description}}
                 {{list.bid}}

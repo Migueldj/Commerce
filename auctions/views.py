@@ -1,5 +1,6 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.db.models.deletion import RESTRICT
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
@@ -93,8 +94,12 @@ def create(request):
         "form":ListingForm()
     })
 
-def watchlist(request):
-    return HttpResponse ("Aquí debe ir la pagina para que el usuario vea su watchlist") 
+@login_required(login_url = 'login')
+def watchlist(request, listing_id):
+    user = request.user
+    listing = Listing.objects.get(pk=listing_id)
+    user.UserWatchlist.add(listing)
+    return HttpResponseRedirect(reverse("index"))
 
 def categories(request):
     categories = Category.objects.all()
@@ -102,17 +107,28 @@ def categories(request):
         "categories": categories,
     })
 
-def categoryListings(request, category_id):
-    category = Category.objects.get(pk = category_id)
+def categoryListings(request, category_name):
+    category = Category.objects.get(options = category_name)
     listings = category.Filter.all()
     return render(request, "auctions/category.html", {
         "category": category,
         "listings": listings,
     })
 
-def listing(request, category_id, listing_id):
-    category = Category.objects.get(pk=category_id)
+def listing(request,category_name,listing_id):
     listing = Listing.objects.get(pk = listing_id)
+    user = request.user
+    watchlistBool = False
     return render(request, "auctions/listing.html",{
         "listing":listing,
+        "onWatchlist":watchlistBool,
+    })
+
+@login_required(login_url = 'login')  
+def userAuctions(request):
+    #user = User.objects.get(pk=user_id) #Este lo usé cuando devolvía el id del usuario
+    user = request.user
+    auctions = user.UserListings.all()
+    return render(request, "auctions/userAuctions.html",{
+        "userAuctions":auctions,
     })

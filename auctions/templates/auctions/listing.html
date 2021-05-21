@@ -2,6 +2,21 @@
 
 {% block body %}
     <div>
+        {% if user.is_authenticated and listing.user != request.user %}
+            {% if onWatchlist == False %}
+                <a href="{% url 'watchlist' listing.id %}">
+                    <button>
+                        Add to watchlist
+                    </button>
+                </a>     
+            {% else %}
+                <button>
+                    Remove from watchlist
+                </button>
+            {% endif %}
+        {% endif %}
+    </div>
+    <div>
         <h1>{{listing.title}}</h1>
     </div>
     <div>

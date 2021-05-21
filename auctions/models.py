@@ -1,6 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 from django.db.models.deletion import CASCADE
+from django.db.models.fields.related import OneToOneField
+from django.db.models.query_utils import RegisterLookupMixin
 from django.utils import tree
 
 
@@ -25,6 +27,7 @@ class Listing(models.Model):
     user = models.ForeignKey(User, null = True, on_delete=CASCADE, related_name= "UserListings")
     comments = models.ManyToManyField(Commentary, null = True, blank = True, related_name = "ListingComments")
     active = models.BooleanField(default = True)
+    usersWatchlist = models.ManyToManyField(User, null=True, blank=True, related_name="UserWatchlist")
 
     def __str__(self):
         return self.title
