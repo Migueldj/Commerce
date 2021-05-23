@@ -25,16 +25,23 @@ class Commentary(models.Model):
     def __str__(self):
         return f"User: {self.user} Date: {self.date} Listing: {self.listing} Comment: {self.comment}"
 
+
 class Listing(models.Model):
     title = models.CharField(max_length=64, null = True)
     description = models.TextField()
     category = models.ForeignKey(Category, blank = True,  on_delete=models.PROTECT, related_name="Filter")
     imageURL = models.URLField()
     bid = models.IntegerField()
-    user = models.ForeignKey(User, null = True, on_delete=CASCADE, related_name= "UserListings")
+    user = models.ForeignKey(User, null = False, on_delete=CASCADE, related_name= "UserListings")
     active = models.BooleanField(default = True)
 
     def __str__(self):
         return self.title
 
+class Bid(models.Model):
+    bid = models.IntegerField()
+    user = models.ForeignKey(User, null=True, on_delete=CASCADE)
+    listing = models.ForeignKey(Listing, null=True,  on_delete=CASCADE, related_name="ListingHigherBid")
 
+    def __str__(self):
+        return f"Bid:{self.bid} Listing:{self.listing} User:{self.user}"

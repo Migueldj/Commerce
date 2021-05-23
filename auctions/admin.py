@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Category, Commentary, Listing, User
+from .models import Bid, Category, Commentary, Listing, User
 # Register your models here.
 
 class UserAdmin(admin.ModelAdmin):
@@ -9,3 +9,4 @@ admin.site.register(User,UserAdmin) # lo agregué para poder modificar usuarios 
 admin.site.register(Listing)
 admin.site.register(Category)
 admin.site.register(Commentary)
+admin.site.register(Bid)

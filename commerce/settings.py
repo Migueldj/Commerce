@@ -107,7 +107,7 @@ AUTH_PASSWORD_VALIDATORS = [
 
 LANGUAGE_CODE = 'en-us'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'America/Mexico_City' #Cambié el tz porque antes utilizaba 'UTC', y utilizo el tiempo para los comentarios
 
 USE_I18N = True
 

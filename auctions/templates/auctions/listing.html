@@ -35,14 +35,25 @@
         {{listing.description}}
     </div>
     <div>
-        <strong>{{listing.bid}}</strong>
+        <p>Initial bid: <strong>{{listing.bid}}</strong> </p>
+        <p>Higher bid: <strong>{{higherBid.bid}}</strong> </p>
+        <p>Bids so far: <strong>{{bidsSoFar}}</strong> <p>
+
+        
     </div>
     {% if user.is_authenticated %}
         <div>
+            <form action="{% url 'listing' listing.category listing.id %}" method="POST" name="bid">
+                {% csrf_token %}
+                {{ bidForm.as_ul }}
+                <button type="submit" class="btn btn-primary" name="bidBtn">Add new bid</button>
+            </form>
+        </div>
+        <div>
             <form action="{% url 'listing' listing.category listing.id %}" method="POST">
                 {% csrf_token %}
-                {{commentForm.as_ul}}
-                <button type="submit" class="btn btn-primary">Submit</button>
+                {{ commentForm.as_ul }}
+                <button type="submit" class="btn btn-primary" name="commentBtn">Submit</button>
             </form>
         </div>
     {% endif %}

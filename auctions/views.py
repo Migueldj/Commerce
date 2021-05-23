@@ -1,11 +1,12 @@
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models.deletion import RESTRICT
+from django.db.utils import Error
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
-from .models import Commentary, Listing, User, Category
+from .models import Bid, Commentary, Listing, User, Category
 from django.forms import ModelForm # lo importé para hacer un form a partir de un model definido
 from django.contrib.auth.decorators import login_required # lo importé para que solo usuarios registrados accesen a cierta vista
 
@@ -134,18 +135,31 @@ class CommentaryForm(ModelForm):
         model = Commentary
         fields = ['comment']
 
+class BidForm(ModelForm):
+    class Meta:
+        model = Bid
+        fields = ['bid']
+
 def listing(request,category_name,listing_id):
+
     listing = Listing.objects.get(pk = listing_id)
     user = request.user.id
     watchlistBool=False
     comments = listing.Comments.all()
+    
+    higherBid = listing.ListingHigherBid.all().last()
+    bidsSoFar = listing.ListingHigherBid.all().count()
+
     if User.objects.filter(pk=user).exists():
         userLogged = request.user
+
         if userLogged.userWatchlist.filter(pk=listing.id).exists():
             watchlistBool = True
         else:
             watchlistBool = False
-        if request.method == 'POST': 
+
+        if request.method == 'POST' and 'commentBtn' in request.POST: 
+
             commentForm = CommentaryForm(request.POST)
             if commentForm.is_valid():
                 newComment = commentForm.save(commit=False)
@@ -157,17 +171,31 @@ def listing(request,category_name,listing_id):
                 return render(request, "auctions/listing.html",{
                     "commentForm":commentForm,
                 })
+
+        if request.method == 'POST' and 'bidBtn' in request.POST:
+            bidForm = BidForm(request.POST)
+            if bidForm.is_valid():
+                newBid = bidForm.save(commit = False)
+                newBid.user = request.user
+                newBid.listing = listing
+                newBid.save()
+                return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))
     else:
         return render(request, "auctions/listing.html",{
         "listing":listing,
         "comments":comments,
+        "higherBid":higherBid,
+        "bidsSoFar":bidsSoFar,
         })
 
     return render(request, "auctions/listing.html",{
         "listing":listing,
         "onWatchlist":watchlistBool,
         "commentForm": CommentaryForm(),
+        "bidForm":BidForm(),
         "comments":comments,
+        "higherBid":higherBid,
+        "bidsSoFar":bidsSoFar,
     })
 
 @login_required(login_url = 'login')  
