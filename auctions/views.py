@@ -149,6 +149,7 @@ def listing(request,category_name,listing_id):
     
     higherBid = listing.ListingHigherBid.all().last()
     bidsSoFar = listing.ListingHigherBid.all().count()
+    winner = listing.winner 
 
     if User.objects.filter(pk=user).exists():
         userLogged = request.user
@@ -196,6 +197,7 @@ def listing(request,category_name,listing_id):
         "comments":comments,
         "higherBid":higherBid,
         "bidsSoFar":bidsSoFar,
+        "winner":winner,
     })
 
 @login_required(login_url = 'login')  
@@ -206,3 +208,11 @@ def userAuctions(request):
     return render(request, "auctions/userAuctions.html",{
         "userAuctions":auctions,
     })
+
+@login_required(login_url='login')
+def close(request, listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    listing.active = False
+    listing.winner = listing.ListingHigherBid.all().last().user
+    listing.save()
+    return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))

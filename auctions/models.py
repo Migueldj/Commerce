@@ -34,6 +34,7 @@ class Listing(models.Model):
     bid = models.IntegerField()
     user = models.ForeignKey(User, null = False, on_delete=CASCADE, related_name= "UserListings")
     active = models.BooleanField(default = True)
+    winner = models.ForeignKey(User, null=True, blank=True, on_delete=CASCADE, related_name="ListingsWon")
 
     def __str__(self):
         return self.title
