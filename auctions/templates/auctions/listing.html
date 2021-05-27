@@ -41,11 +41,16 @@
     </div>
     <div>
         <p>Initial bid: <strong>{{listing.bid}}</strong> </p>
-        <p>Higher bid: <strong>{{higherBid.bid}}</strong> </p>
+        <p>Higher bid: <strong>{{higherBidNumber}}</strong> </p>
         <p>Bids so far: <strong>{{bidsSoFar}}</strong> <p>
     </div>
     {% if user.is_authenticated %}
         {% if listing.active is True %}
+            {% if error %}
+                <div class="alert alert-danger" role="alert">
+                    New bid must be higher than previous higher bid
+                </div>
+            {% endif %}
             <div>
                 <form action="{% url 'listing' listing.category listing.id %}" method="POST">
                     {% csrf_token %}
@@ -53,6 +58,7 @@
                     <button type="submit" class="btn btn-primary" name="bidBtn">Add new bid</button>
                 </form>
             </div>
+            
         {% endif %}
         <div>
             <form action="{% url 'listing' listing.category listing.id %}" method="POST">

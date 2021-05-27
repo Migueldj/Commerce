@@ -148,6 +148,11 @@ def listing(request,category_name,listing_id):
     comments = listing.Comments.all()
     
     higherBid = listing.ListingHigherBid.all().last()
+    if higherBid is None:
+        higherBidNumber = listing.bid
+    else:
+        higherBidNumber = listing.ListingHigherBid.all().last().bid
+
     bidsSoFar = listing.ListingHigherBid.all().count()
     winner = listing.winner 
 
@@ -174,13 +179,30 @@ def listing(request,category_name,listing_id):
                 })
 
         if request.method == 'POST' and 'bidBtn' in request.POST:
-            bidForm = BidForm(request.POST)
+            bidForm = BidForm(request.POST or None)
             if bidForm.is_valid():
-                newBid = bidForm.save(commit = False)
-                newBid.user = request.user
-                newBid.listing = listing
-                newBid.save()
-                return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))
+                bid = bidForm.cleaned_data['bid']     
+                if bid > higherBidNumber:  
+                    newBid = bidForm.save(commit = False)
+                    newBid.user = request.user
+                    newBid.listing = listing
+                    newBid.save()
+                    return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))
+                else:
+                    error = True
+                    return render(request, "auctions/listing.html",{
+                    "listing":listing,
+                    "onWatchlist":watchlistBool,
+                    "commentForm": CommentaryForm(),
+                    "bidForm":BidForm(),
+                    "comments":comments,
+                    "higherBid":higherBid,
+                    "bidsSoFar":bidsSoFar,
+                    "winner":winner,
+                    "higherBidNumber":higherBidNumber,
+                    "error": error
+                    })
+                    
     else:
         return render(request, "auctions/listing.html",{
         "listing":listing,
@@ -198,6 +220,7 @@ def listing(request,category_name,listing_id):
         "higherBid":higherBid,
         "bidsSoFar":bidsSoFar,
         "winner":winner,
+        "higherBidNumber":higherBidNumber,
     })
 
 @login_required(login_url = 'login')  
