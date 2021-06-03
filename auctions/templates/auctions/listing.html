@@ -5,29 +5,38 @@
         {% if user.is_authenticated and listing.user != request.user %}
             {% if onWatchlist == False %}
                 <a href="{% url 'watchlist' listing.id %}">
-                    <button>
-                        Add to watchlist
-                    </button>
+                    <button type="button" class="btn btn-primary">Add to watchlist</button>
                 </a>     
             {% else %}
                 <a href="{% url 'watchlist' listing.id %}">
-                    <button>
-                        Remove from watchlist
-                    </button>
+                    <button type="button" class="btn btn-primary">Remove from watchlist</button>
                 </a>
             {% endif %}
         {% elif user.is_authenticated and listing.user.id == user.id %}
-            {% if listing.active is True %}
+            {% if listing.active is True and bidsSoFar > 0 %}
                 <a href="{% url 'close' listing.id %}">
-                    <button>
-                        Close Auction
-                    </button>
+                    <button type="button" class="btn btn-warning">Close Auction</button>
+                </a>
+                
+            {% elif listing.active is True and bidsSoFar == 0 %}
+                <a href="{% url 'delete' listing.id %}">
+                    <button type="button" class="btn btn-danger">Delete Auction</button>
                 </a>
             {% else %}
-                Auction Closed
-                Winner: {{listing.winner}}
+                <div class="alert alert-info" role="alert">
+                    <p>Auction Closed</p> 
+                    <p>Winner: {{winner}} </p>
+                </div>
             {% endif %}
+
         {% endif %}
+        
+        {% if user.is_authenticated and user == winner %}
+            <div class="alert alert-success" role="alert">
+                You won!
+            </div>
+        {% endif %}  
+
     </div>
     <div>
         <h1>{{listing.title}}</h1>
@@ -44,13 +53,17 @@
         <p>Higher bid: <strong>{{higherBidNumber}}</strong> </p>
         <p>Bids so far: <strong>{{bidsSoFar}}</strong> <p>
     </div>
+
     {% if user.is_authenticated %}
+       
         {% if listing.active is True %}
             {% if error %}
                 <div class="alert alert-danger" role="alert">
                     New bid must be higher than previous higher bid
                 </div>
             {% endif %}
+            
+            {% if user != listing.user %}
             <div>
                 <form action="{% url 'listing' listing.category listing.id %}" method="POST">
                     {% csrf_token %}
@@ -58,8 +71,9 @@
                     <button type="submit" class="btn btn-primary" name="bidBtn">Add new bid</button>
                 </form>
             </div>
-            
+            {% endif %}
         {% endif %}
+
         <div>
             <form action="{% url 'listing' listing.category listing.id %}" method="POST">
                 {% csrf_token %}
@@ -67,18 +81,21 @@
                 <button type="submit" class="btn btn-primary" name="commentBtn">Submit</button>
             </form>
         </div>
+
+        <div>
+            <ul>
+                {% for comment in comments %}
+                    <li>
+                        {{comment.comment}}
+                        {{comment.user}}
+                        {{comment.date}}
+                    </li>
+                {% empty %}
+                No comments yet
+                {% endfor %}
+            </ul>
+        </div>
+
     {% endif %}
-    <div>
-        <ul>
-            {% for comment in comments %}
-                <li>
-                    {{comment.comment}}
-                    {{comment.user}}
-                    {{comment.date}}
-                </li>
-            {% empty %}
-            No comments yet
-            {% endfor %}
-        </ul>
-    </div>
+    
 {%  endblock %}

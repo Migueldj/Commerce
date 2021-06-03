@@ -1,3 +1,4 @@
+from typing import List
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
 from django.db.models.deletion import RESTRICT
@@ -146,7 +147,7 @@ def listing(request,category_name,listing_id):
     user = request.user.id
     watchlistBool=False
     comments = listing.Comments.all()
-    
+
     higherBid = listing.ListingHigherBid.all().last()
     if higherBid is None:
         higherBidNumber = listing.bid
@@ -228,14 +229,40 @@ def userAuctions(request):
     #user = User.objects.get(pk=user_id) #Este lo usé cuando devolvía el id del usuario
     user = request.user
     auctions = user.UserListings.all()
+
     return render(request, "auctions/userAuctions.html",{
         "userAuctions":auctions,
     })
 
 @login_required(login_url='login')
 def close(request, listing_id):
+    user = request.user 
     listing = Listing.objects.get(pk=listing_id)
-    listing.active = False
-    listing.winner = listing.ListingHigherBid.all().last().user
-    listing.save()
-    return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))
+    bidsSoFar = listing.ListingHigherBid.all().count()
+    if listing.user == user and bidsSoFar > 0:
+        listing.active = False
+        listing.winner = listing.ListingHigherBid.all().last().user
+        listing.save()
+        return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))
+    else:
+        return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))
+
+@login_required(login_url='login')
+def delete(request,listing_id):
+    listing = Listing.objects.get(pk=listing_id)
+    user = request.user
+    if User.objects.filter(pk = user.id).exists() and user == listing.user:
+        listing.delete()
+        return HttpResponseRedirect(reverse("index"))
+    else:
+        return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))
+
+@login_required(login_url='login')
+def won(request):
+    user = request.user 
+    listings = user.ListingsWon.all()
+    won = True
+    return render(request, "auctions/userAuctions.html",{
+        'userAuctions':listings,
+        'won': won,
+    }) 

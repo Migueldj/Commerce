@@ -2,7 +2,11 @@
 
 {% block body %}
 <div>
-    <h1>My Auctions</h1>
+    {% if won %}
+        <h1>Auctions Won</h1>
+    {% else %}
+        <h1>My Auctions</h1>
+    {% endif %}
 </div>
 <div>
     <ul>
@@ -14,7 +18,11 @@
             {{auction.bid}}
         </li>
         {% empty %}
-        You don´t have auctions posted yet
+            {% if won %}
+                You have not win any auction yet
+            {% else %}
+                You don´t have auctions posted yet
+            {% endif %}
         {% endfor %}
     </ul>
 </div>
