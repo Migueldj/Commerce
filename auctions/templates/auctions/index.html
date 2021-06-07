@@ -1,19 +1,38 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <h1>Active Listings</h1>
-    <div>
-        <ul>
-            {% for list in listings %}
-            <li>
-                <a href="{% url 'listing' list.category.options list.id %}"><strong>{{list.title}}</strong></a>
-                <img src="{{list.imageURL}}" alt="Product Image" height="200px" width="px">
-                {{list.description}}
-                {{list.bid}}
-            </li>
-            {% empty %}
-            There are no {{category}} listings yet
-            {% endfor %}
-        </ul>
+    <div class="subtitle">
+        <h2 id="subtitle_text">Active Listings</h2>
     </div>
+
+    <ul style="padding: 0 !important;">
+        <div class="outsider">
+            <div class="container-fluid">
+                <div class="row">
+                    {% for list in listings %}
+                    <div class="col">
+                        <li class="item">
+                            <div class="item_title">
+                                <a href="{% url 'listing' list.category.options list.id %}"><strong>{{list.title}}</strong></a>
+                            </div>
+                            <div class="image_div">
+                                <img class="item_image" src="{{list.imageURL}}" alt="Product Image" height="200px" width="px">
+                            </div>
+                            <hr>
+                            <div class="item_price">
+                                <strong> $ {{list.bid}}</strong>
+                            </div>
+                            <div class="item_description">
+                                {{list.description}}
+                            </div>
+                        </li>
+                    </div>
+                    
+                    {% empty %}
+                    There are no {{category}} listings yet
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </ul>
 {% endblock %}
