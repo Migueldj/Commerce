@@ -1,10 +1,16 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <div>
+<div class="subtitle">
+    <h2 class="subtitle_text">
+        Create Listing
+    </h2>
+</div>
+    <div style="margin: 30px;">
         <form class="" action="{% url 'create' %}" method="POST">
             {% csrf_token %}
-            {{form.as_ul}}
+                {{form.as_ul}}
+            <hr>
             <button type="submit" class="btn btn-primary">Submit</button>
         </form>
     </div>

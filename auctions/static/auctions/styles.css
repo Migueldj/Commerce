@@ -2,7 +2,16 @@ body {
     margin: 0;
     background-color: lightskyblue;
 }
+li{
+    list-style: none;
+}
 
+label{
+    margin-top: 5px;
+    font-family: "Righteous", sans-serif;
+    font-weight: bold;
+    color: rgb(11, 10, 100);
+}
 .title{
     height: 80px;
     display: flex;
@@ -40,10 +49,10 @@ body {
     justify-content: center;
     align-items: center;
 }
-#subtitle_text{
+.subtitle_text{
     color:rgb(11, 10, 100);
     font-family: "Righteous", sans-serif;
-    border: 2px solid white;
+    border: 2px solid rgb(190, 32, 32);
     border-radius: 5px;
 }
 .outsider{
@@ -69,6 +78,7 @@ body {
     border: 1px solid lightslategray;
     border-radius: 5px;
     margin-top: 5px;
+    margin-bottom: 5px;
 }
 
 .item_title{
@@ -90,3 +100,4 @@ body {
     text-align: center;
     font-family: "Righteous", sans-serif;
 }
+

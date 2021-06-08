@@ -3,27 +3,62 @@
 {% block body %}
 <div>
     {% if won %}
-        <h1>Auctions Won</h1>
+        <div class="subtitle">
+            <h2 class="subtitle_text">
+                Auctions Won
+            </h2>
+        </div>
+    {% elif watchlist %}
+        <div class="subtitle">
+            <h2 class="subtitle_text">
+                Watchlist
+            </h2>
+        </div>
     {% else %}
-        <h1>My Auctions</h1>
+        <div class="subtitle">
+            <h2 class="subtitle_text">
+                My Auctions
+            </h2>
+        </div>
     {% endif %}
 </div>
-<div>
-    <ul>
-        {% for auction in userAuctions %}
-        <li>
-            <a href="{% url 'listing' auction.category.id auction.id %}"><strong>{{auction.title}}</strong></a>
-            <img src="{{auction.imageURL}}" alt="Product Image" height="200px" width="px">
-            {{auction.description}}
-            {{auction.bid}}
-        </li>
-        {% empty %}
-            {% if won %}
-                You have not win any auction yet
-            {% else %}
-                You don´t have auctions posted yet
-            {% endif %}
-        {% endfor %}
-    </ul>
-</div>
+
+<ul style="padding: 0 !important;">
+    <div class="outsider">
+        <div class="container-fluid">
+            <div class="row">
+                {% for auction in userAuctions %}
+                <div class="col">
+                    <li class="item">
+                        <div class="item_title">
+                            <a href="{% url 'listing' auction.category.options auction.id %}">
+                                <strong>{{auction.title}}</strong>
+                                <div class="image_div">
+                                    <img class="item_image" src="{{auction.imageURL}}" alt="Product Image" height="200px" width="px">
+                                </div>
+
+                            </a>
+                        </div>
+                        <hr>
+                        <div class="item_price">
+                            <strong> $ {{auction.bid}}</strong>
+                        </div>
+                        <div class="item_description">
+                            {{auction.description}}
+                        </div>
+                    </li>
+                </div> 
+                {% empty %}
+                    {% if won %}
+                        You have not win any auction yet
+                    {% elif watchlist %}
+                        Your watchlist is empty
+                    {% else %}
+                        You don´t have auctions posted yet
+                    {% endif %}
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</ul>
 {% endblock %}

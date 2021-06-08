@@ -1,20 +1,27 @@
 from typing import List
 from django.contrib.auth import authenticate, login, logout
 from django.db import IntegrityError
+from django.db.models.base import Model
 from django.db.models.deletion import RESTRICT
+from django.db.models.fields import IntegerField, URLField
 from django.db.utils import Error
+from django.forms.fields import TypedMultipleChoiceField
+from django.forms.models import ModelChoiceField
+from django.forms.widgets import Input, Select, TextInput
 from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from django.urls import reverse
 
 from .models import Bid, Commentary, Listing, User, Category
-from django.forms import ModelForm # lo importé para hacer un form a partir de un model definido
+from django.forms import ModelForm,Textarea, NumberInput, URLInput # lo importé para hacer un form a partir de un model definido
 from django.contrib.auth.decorators import login_required # lo importé para que solo usuarios registrados accesen a cierta vista
 
 def index(request):
     listings = Listing.objects.filter(active=True) # aqui puedo agregar bool y exclude solo para los activos o filter
+    onIndex = True
     return render(request, "auctions/index.html", {
         "listings": listings,
+        "onIndex": onIndex,
     })
 
 
@@ -73,7 +80,18 @@ def register(request):
 class ListingForm(ModelForm):
     class Meta:
         model = Listing
-        fields = ['title','description', 'imageURL', 'category', 'bid']
+        fields = ['title','description', 'category', 'bid', 'imageURL'] #Con esto selecciono los campos que quiero que aparezcan y el orden
+        widgets = { #Esto lo hice para poder cambiar el tipo de widget y agregar atributos html
+            'description': Textarea(attrs={'class': 'form-control', 'placeholder': 'Description', 'rows':4,}),
+            'title': TextInput(attrs={'class': 'form-control', 'placeholder': 'Title',}),
+            'bid': NumberInput(attrs={'class': 'form-control', 'placeholder': 'Initial Bid',}),
+            'imageURL': URLInput(attrs={'class': 'form-control', 'placeholder': 'URL of Image',}),
+            'category': Select(attrs={'class': 'form-control',})
+        }
+        labels={ #Esto cambia el label con que aparece el input 
+            'bid': 'Initial Bid',
+            'imageURL': 'Image'
+        }
 
 
 @login_required(login_url = 'login') # esto funciona como un reverse, utiliza un name de los urls definidos para redirigir a los usuarios que no han iniciado sesión
@@ -85,9 +103,14 @@ def create(request):
             newListing.user = request.user #Con esto agrego al usuario que hizo la publicación a la DB 
             newListing.save()
             #newListing.save_m2m() # Este lo usaria si agregara datos del tipo ManyToMany
+            listing=Listing.objects.get(pk=newListing.id) # lo usaré para direccionar al usuario al listing creado 
+            '''
+            #Esto me regresaría a la pagina de create para que el usuario pueda hacer otro listing
             return render(request, "auctions/create.html",{
                 "form":ListingForm()
             })
+            '''
+            return HttpResponseRedirect(reverse("listing", kwargs={'category_name':listing.category,'listing_id':listing.id}))
         else:
             return render(request, "auctions/create.html",{
                 "form":form
@@ -110,8 +133,10 @@ def watchlist(request, listing_id):
 def watchlist_view(request):
     user = request.user
     watchlist = user.userWatchlist.all()
-    return render(request, "auctions/userWatchlist.html",{
-        'userWatchlist':watchlist,
+    onWatchlist = True
+    return render(request, "auctions/userAuctions.html",{
+        'userAuctions':watchlist,
+        'watchlist': onWatchlist,
     })
 
 
@@ -124,7 +149,8 @@ def categories(request):
 def categoryListings(request, category_name):
     category = Category.objects.get(options = category_name)
     listings = category.Filter.all()
-    return render(request, "auctions/category.html", {
+
+    return render(request, "auctions/index.html", {
         "category": category,
         "listings": listings,
     })

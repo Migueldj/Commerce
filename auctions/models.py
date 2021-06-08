@@ -12,7 +12,7 @@ class User(AbstractUser):
 
 class Category(models.Model):
     options = models.CharField(max_length=64)
-
+    categoryImage = models.URLField(null=True)
     def __str__(self):
         return self.options 
 

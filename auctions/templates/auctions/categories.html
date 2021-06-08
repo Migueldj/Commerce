@@ -1,17 +1,31 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-<div>
-    <h1>
+<div class="subtitle">
+    <h2 class="subtitle_text">
         Categories
-    </h1>
+    </h2>
 </div>
-<ul>
-    {% for category in categories%}
-         <li>
-             <a href="{% url 'categoryListings' category.options %}">{{ category }}</a>
-        </li>
-    {% endfor %}
+<ul style="padding: 0 !important;">
+    <div class="outsider">
+        <div class="container-fluid">
+            <div class="row">
+                {% for category in categories%}
+                <div class="col">
+                    <li class="item">
+                        <div class="item_title">
+                            <a href="{% url 'categoryListings' category.options %}">
+                                <div class="image_div">
+                                    <strong style="font-size: larger; color: rgb(11, 10, 100);">{{ category.options }}</strong>
+                                    <img class="item_image" src="{{category.categoryImage}}" alt="">
+                                </div>   
+                            </a>
+                        </div>
+                    </li>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
 </ul>
-    
 {% endblock %}

@@ -1,9 +1,15 @@
 {% extends "auctions/layout.html" %}
 
 {% block body %}
-    <div class="subtitle">
-        <h2 id="subtitle_text">Active Listings</h2>
-    </div>
+    {% if onIndex %}
+        <div class="subtitle">
+            <h2 class="subtitle_text">Active Listings</h2>
+        </div>
+    {% else %}
+        <div class="subtitle">
+            <h2 class="subtitle_text">{{ category }}
+        </div>
+    {% endif %}
 
     <ul style="padding: 0 !important;">
         <div class="outsider">
@@ -13,10 +19,12 @@
                     <div class="col">
                         <li class="item">
                             <div class="item_title">
-                                <a href="{% url 'listing' list.category.options list.id %}"><strong>{{list.title}}</strong></a>
-                            </div>
-                            <div class="image_div">
-                                <img class="item_image" src="{{list.imageURL}}" alt="Product Image" height="200px" width="px">
+                                <a href="{% url 'listing' list.category.options list.id %}">
+                                    <strong>{{list.title}}</strong>
+                                    <div class="image_div">
+                                        <img class="item_image" src="{{list.imageURL}}" alt="Product Image" height="200px" width="px">
+                                    </div>
+                                </a>
                             </div>
                             <hr>
                             <div class="item_price">
@@ -29,7 +37,11 @@
                     </div>
                     
                     {% empty %}
-                    There are no {{category}} listings yet
+                        {% if onIndex %}
+                            There are no listings posted yet
+                        {% else %}
+                            There are no {{category}} listings yet
+                        {% endif %}
                     {% endfor %}
                 </div>
             </div>
