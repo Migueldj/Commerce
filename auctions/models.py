@@ -19,7 +19,7 @@ class Category(models.Model):
 class Commentary(models.Model):
     comment = models.CharField(max_length = 100)
     user = models.ForeignKey(User, null = True, blank = True, on_delete=CASCADE)
-    date = models.DateTimeField(auto_now=True)
+    date = models.DateField(auto_now=True)
     listing = models.ForeignKey("Listing", null=True, on_delete=CASCADE, related_name="Comments")
 
     def __str__(self):

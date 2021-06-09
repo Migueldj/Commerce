@@ -32,7 +32,9 @@
                     <li class="item">
                         <div class="item_title">
                             <a href="{% url 'listing' auction.category.options auction.id %}">
-                                <strong>{{auction.title}}</strong>
+                                <div style="display: flex; align-items: center; justify-content: center;">
+                                    <h4 class="display-4" id="description_title">{{auction.title}}</h4>
+                                </div> 
                                 <div class="image_div">
                                     <img class="item_image" src="{{auction.imageURL}}" alt="Product Image" height="200px" width="px">
                                 </div>

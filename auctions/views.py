@@ -162,10 +162,26 @@ class CommentaryForm(ModelForm):
         model = Commentary
         fields = ['comment']
 
+        widgets = {
+            'comment': TextInput(attrs={'class':'form-control', 'placeholder':'Comment'})
+        }
+        
+        labels = {
+            'comment':''
+        }
+
 class BidForm(ModelForm):
     class Meta:
         model = Bid
         fields = ['bid']
+
+        widgets = {
+            'bid': TextInput(attrs={'class':'form-control', 'placeholder':'Place a bid'})
+        }
+        
+        labels = {
+            'bid':''
+        }
 
 def listing(request,category_name,listing_id):
 

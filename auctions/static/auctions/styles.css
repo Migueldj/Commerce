@@ -101,3 +101,51 @@ label{
     font-family: "Righteous", sans-serif;
 }
 
+.listing_row{
+    display: inline-flex;
+    height: 500px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.listing_image{
+    width: 50%;
+    height: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background-color: white;
+    border-radius: 15px;
+}
+
+#listing_container{
+    background-color: inherit;
+    flex-wrap: wrap;
+}
+
+
+#description_title{
+    font-size: 30px;
+    width: 90%;
+}
+
+.comments{
+    padding-left: 10px;
+}
+
+.comment{
+    background-color: white;
+    border-radius: 10px;
+}
+
+.comment_text{
+    padding-left: 10px;
+    padding-right: 10px;
+    padding-top:5px ;
+}
+
+a:link {
+    color: rgb(11, 10, 100);
+    background-color: transparent;
+    text-decoration: none;
+  }
