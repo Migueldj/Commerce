@@ -30,7 +30,12 @@
                             </div>
                             <hr>
                             <div class="item_price">
-                                Initial bid: <strong> $ {{list.bid}}</strong>
+                                {% if list.ListingHigherBid.all.last.bid %}
+                                    Current Price: <strong>$ {{list.ListingHigherBid.all.last.bid}}</strong> 
+                                    <!-- Arriba me di cuenta que se hace como en python, pero sin los paréntesis, sino, no reconoce las funciones y sale un error de "could not parse reminder" -->
+                                {% else %}
+                                    Initial bid: <strong> $ {{list.bid}}</strong>
+                                {% endif %}
                             </div>
                             <div class="item_description">
                                 {{list.description}}

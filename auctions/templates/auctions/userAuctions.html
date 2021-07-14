@@ -43,7 +43,25 @@
                         </div>
                         <hr>
                         <div class="item_price">
-                            <strong> $ {{auction.bid}}</strong>
+                               
+
+                            {% if won %}
+                                Amount to pay: <strong> $ {{auction.ListingHigherBid.all.last.bid}}</strong>
+                            {% elif watchlist %}
+                                {% if auction.ListingHigherBid.all.last.bid %}
+                                    Current Price: <strong> $ {{auction.ListingHigherBid.all.last.bid}}</strong>
+                                {% else %}
+                                    Initial bid: <strong> $ {{auction.bid}}</strong>
+                                {% endif %}   
+                            {% else %}
+                                {% if auction.ListingHigherBid.all.last.bid %}
+                                    Higher Bid: <strong> $ {{auction.ListingHigherBid.all.last.bid}}</strong>
+                                    <br>
+                                    Bids so far: <strong>{{auction.ListingHigherBid.all.count}}</strong>
+                                {% else %}
+                                    Initial bid: <strong> $ {{auction.bid}}</strong>
+                                {% endif %}  
+                            {% endif %}
                         </div>
                         <div class="item_description">
                             {{auction.description}}
@@ -56,7 +74,7 @@
                     {% elif watchlist %}
                         Your watchlist is empty
                     {% else %}
-                        You don´t have auctions posted yet
+                        You don't have auctions posted yet
                     {% endif %}
                 {% endfor %}
             </div>

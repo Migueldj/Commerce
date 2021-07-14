@@ -62,12 +62,18 @@
                         {% if listing.bid == higherBidNumber %}
                         <h4 class="display-4" id="description_title">Initial bid: <strong> ${{listing.bid}}</strong></h4>
                         {% else %}
-                        <h4 class="display-4" id="description_title">Higher bid: <strong>${{higherBidNumber}}</strong></h4>  
+                        <h4 class="display-4" id="description_title">Initial bid: <strong> ${{listing.bid}}</strong></h4>
+                        <h4 class="display-4" id="description_title">Current Price: <strong>${{higherBidNumber}}</strong></h4>  
                         {% endif %}
                         <h4 class="display-4" id="description_title">Bids so far: <strong> {{bidsSoFar}} </strong> </strong></h4>
                     {% else %}
-                        <h4 class="display-4" id="description_title">Initial bid: <strong> ${{listing.bid}}</strong></h4>
-                        
+                        {% if listing.ListingHigherBid.all.last.bid %}
+                            <h4 class="display-4" id="description_title">Initial Bid: <strong> ${{listing.bid}}</strong></h4>
+                            <h4 class="display-4" id="description_title">Current Price: <strong> ${{listing.ListingHigherBid.all.last.bid}}</strong></h4>
+                        {% else %}
+                            <h4 class="display-4" id="description_title">Initial Bid: <strong> ${{listing.bid}}</strong></h4>
+                        {% endif %}
+
                         <h4 class="display-4" id="description_title">Wanna place a bid for this item?</h4>
                         <div style="max-width: 300px; display: flex; align-items: center; justify-content: left; margin-top: 15px;">
                             <a href="{% url 'login' %}">
