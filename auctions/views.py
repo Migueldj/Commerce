@@ -148,7 +148,7 @@ def categories(request):
 
 def categoryListings(request, category_name):
     category = Category.objects.get(options = category_name)
-    listings = category.Filter.all()
+    listings = category.Filter.exclude(active = False)
 
     return render(request, "auctions/index.html", {
         "category": category,
