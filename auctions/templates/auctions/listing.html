@@ -1,178 +1,179 @@
 {% extends 'auctions/layout.html' %}
 
 {% block body %}
-
     <div class="outsider">
-        <div>
-            <div style="margin-bottom: 10px; margin-left: 15px;">
-                
-                <h1 class="display-4">{{listing.title}}</h1>
+            <div>
+                <div style="margin-bottom: 10px; margin-left: 15px;">
+                    
+                    <h1 class="display-4">{{listing.title}}</h1>
 
-                {% if user.is_authenticated and listing.user != request.user %}
-                    {% if onWatchlist == False %}
-                        <a href="{% url 'watchlist' listing.id %}">
-                            <button type="button" class="btn btn-primary">Add to watchlist</button>
-                        </a>     
-                    {% else %}
-                        <a href="{% url 'watchlist' listing.id %}">
-                            <button type="button" class="btn btn-primary">Remove from watchlist</button>
-                        </a>
-                    {% endif %}
-                {% elif user.is_authenticated and listing.user.id == user.id %}
-                    {% if listing.active is True and bidsSoFar > 0 %}
-                        <a href="{% url 'close' listing.id %}">
-                            <button type="button" class="btn btn-warning">Close Auction</button>
-                        </a>
-                        
-                    {% elif listing.active is True and bidsSoFar == 0 %}
-                        <a href="{% url 'delete' listing.id %}">
-                            <button type="button" class="btn btn-danger">Delete Auction</button>
-                        </a>
-                    {% else %}
-
-                    {% endif %}
-        
-                {% endif %}
-                
+                    {% if user.is_authenticated and listing.user != request.user %}
+                        {% if onWatchlist == False %}
+                            <a href="{% url 'watchlist' listing.id %}">
+                                <button type="button" class="btn btn-primary">Add to watchlist</button>
+                            </a>     
+                        {% else %}
+                            <a href="{% url 'watchlist' listing.id %}">
+                                <button type="button" class="btn btn-primary">Remove from watchlist</button>
+                            </a>
+                        {% endif %}
+                    {% elif user.is_authenticated and listing.user.id == user.id %}
+                        {% if listing.active is True and bidsSoFar > 0 %}
+                            <a href="{% url 'close' listing.id %}">
+                                <button type="button" class="btn btn-warning">Close Auction</button>
+                            </a>  
+                        {% elif listing.active is True and bidsSoFar == 0 %}
+                            <a href="{% url 'delete' listing.id %}">
+                                <button type="button" class="btn btn-danger">Delete Auction</button>
+                            </a>
+                        {% else %}
+                            <br>
+                        {% endif %}
+                    {% endif %}          
+                </div>
             </div>
-    
-        </div>
 
-        <div class="container-fluid" id="listing_container">
-            <div class="listing_row" >
-                <div class="listing_image">
-                    <img class="item_image" src="{{listing.imageURL}}" alt="Product Image">
-                </div> 
-                <div style="width: 50%; padding-left: 10px;">
-                    
-                    <div>
+            <div class="container-fluid" id="listing_container">
+                <div class="listing_row" >
+                    <div class="listing_image">
+                        <img class="item_image" src="{{listing.imageURL}}" alt="Product Image">
+                    </div> 
+
+                    <div style="width: 50%; padding-left: 10px;">
+                        
                         <div>
-                            <h4 class="display-4" id="description_title">Description</h4>
-                        </div>
-                        <div style="max-width: 300px;">
-                            {{listing.description}}
-                        </div>
-                    </div>
-
-                    <div style="max-width: 300px;">
-                        <hr>
-                    </div>
-                    
-                    {% if user.is_authenticated %}
-                        {% if listing.bid == higherBidNumber %}
-                        <h4 class="display-4" id="description_title">Initial bid: <strong> ${{listing.bid}}</strong></h4>
-                        {% else %}
-                        <h4 class="display-4" id="description_title">Initial bid: <strong> ${{listing.bid}}</strong></h4>
-                        <h4 class="display-4" id="description_title">Current Price: <strong>${{higherBidNumber}}</strong></h4>  
-                        {% endif %}
-                        <h4 class="display-4" id="description_title">Bids so far: <strong> {{bidsSoFar}} </strong> </strong></h4>
-                    {% else %}
-                        {% if listing.ListingHigherBid.all.last.bid %}
-                            <h4 class="display-4" id="description_title">Initial Bid: <strong> ${{listing.bid}}</strong></h4>
-                            <h4 class="display-4" id="description_title">Current Price: <strong> ${{listing.ListingHigherBid.all.last.bid}}</strong></h4>
-                        {% else %}
-                            <h4 class="display-4" id="description_title">Initial Bid: <strong> ${{listing.bid}}</strong></h4>
-                        {% endif %}
-
-                        <h4 class="display-4" id="description_title">Wanna place a bid for this item?</h4>
-                        <div style="max-width: 300px; display: flex; align-items: center; justify-content: left; margin-top: 15px;">
-                            <a href="{% url 'login' %}">
-                                <button type="button" class="btn btn-dark">
-                                    Log In
-                                </button>
-                            </a>
-                            <div style="margin: 10px 10px;">
-                                or
+                            <div>
+                                <h4 class="display-4" id="description_title">Description</h4>
                             </div>
-                            <a href="{% url 'register' %}">
-                                <button type="button" class="btn btn-dark">
-                                    Register
-                                </button>
-                            </a>
-                        </div>
-                
-                    {% endif %}
-
-                   
-                    
-                    {% if user.is_authenticated and user == winner %}
-                        <div class="alert alert-success" role="alert" style="max-width: 300px; padding-top: 15px; text-align: center; margin-top: 15px;">
-                            <h4 class="display-4" id="description_title">You won!</h4>
-                        </div>
-                    {% endif %}
-
-                    {% if user.is_authenticated and listing.user.id == user.id and listing.active is False %}
-                        <div class="alert alert-success" role="alert" style="max-width: 300px; padding-top: 15px; text-align: center; margin-top: 15px;">
-                            <h4 class="display-4" id="description_title"><p>Auction Closed</p> </h4>
-                            <h4 class="display-4" id="description_title"><p>Winner: <b>{{winner}}</b></p></h4>
-                        </div>
-                    {% endif %}
-
-                    {% if user.is_authenticated %}
-                        {% if listing.active is True %}
-                            {% if error %}
-                                <div class="alert alert-danger" role="alert" style="max-width: 300px;">
-                                    New bid must be higher than previous higher bid
-                                </div>
-                            {% endif %}
-                            
-                            {% if user != listing.user %}
                             <div style="max-width: 300px;">
-                                <form action="{% url 'listing' listing.category listing.id %}" method="POST">
-                                    {% csrf_token %}
-                                    {{ bidForm.as_ul }}
-                                    <div style="padding-top: 5px;">
-                                        <button type="submit" class="btn btn-primary" name="bidBtn">Add new bid</button>
-                                    </div>
-                                </form>
+                                {{listing.description}}
                             </div>
+
+                            <div>
+                                <h4 class="display-4" id="description_title">Listed by: </h4>
+                                {{listing.user}}
+                            </div>
+                            <div>
+                                <h4 class="display-4" id="description_title">Category: </h4>
+                                {{listing.category}}
+                            </div>
+                        </div>
+
+                        <div style="max-width: 300px;">
+                            <hr>
+                        </div>
+                        
+                        {% if user.is_authenticated %}
+                            {% if listing.bid == higherBidNumber %}
+                            <h4 class="display-4" id="description_title">Initial bid: <strong> ${{listing.bid}}</strong></h4>
+                            {% else %}
+                            <h4 class="display-4" id="description_title">Initial bid: <strong> ${{listing.bid}}</strong></h4>
+                            <h4 class="display-4" id="description_title">Current Price: <strong>${{higherBidNumber}}</strong></h4>  
                             {% endif %}
+                            <h4 class="display-4" id="description_title">Bids so far: <strong> {{bidsSoFar}} </strong> </strong></h4>
+                        {% else %}
+                            {% if listing.ListingHigherBid.all.last.bid %}
+                                <h4 class="display-4" id="description_title">Initial Bid: <strong> ${{listing.bid}}</strong></h4>
+                                <h4 class="display-4" id="description_title">Current Price: <strong> ${{listing.ListingHigherBid.all.last.bid}}</strong></h4>
+                            {% else %}
+                                <h4 class="display-4" id="description_title">Initial Bid: <strong> ${{listing.bid}}</strong></h4>
+                            {% endif %}
+
+                            <h4 class="display-4" id="description_title">Wanna place a bid for this item?</h4>
+                            <div style="max-width: 300px; display: flex; align-items: center; justify-content: left; margin-top: 15px;">
+                                <a href="{% url 'login' %}">
+                                    <button type="button" class="btn btn-dark">
+                                        Log In
+                                    </button>
+                                </a>
+                                <div style="margin: 10px 10px;">
+                                    or
+                                </div>
+                                <a href="{% url 'register' %}">
+                                    <button type="button" class="btn btn-dark">
+                                        Register
+                                    </button>
+                                </a>
+                            </div>
+                        {% endif %}
+
+                    
+                        
+                        {% if user.is_authenticated and user == winner %}
+                            <div class="alert alert-success" role="alert" style="max-width: 300px; padding-top: 15px; text-align: center; margin-top: 15px;">
+                                <h4 class="display-4" id="description_title">You won!</h4>
+                            </div>
+                        {% endif %}
+
+                        {% if user.is_authenticated and listing.user.id == user.id and listing.active is False %}
+                            <div class="alert alert-success" role="alert" style="max-width: 300px; padding-top: 15px; text-align: center; margin-top: 15px;">
+                                <h4 class="display-4" id="description_title"><p>Auction Closed</p> </h4>
+                                <h4 class="display-4" id="description_title"><p>Winner: <b>{{winner}}</b></p></h4>
+                            </div>
+                        {% endif %}
+
+                        {% if user.is_authenticated %}
+                            {% if listing.active is True %}
+                                {% if error %}
+                                    <div class="alert alert-danger" role="alert" style="max-width: 300px;">
+                                        New bid must be higher than previous higher bid
+                                    </div>
+                                {% endif %}
+                                
+                                {% if user != listing.user %}
+                                <div style="max-width: 300px;">
+                                    <form action="{% url 'listing' listing.category listing.id %}" method="POST">
+                                        {% csrf_token %}
+                                        {{ bidForm.as_ul }}
+                                        <div style="padding-top: 5px;">
+                                            <button type="submit" class="btn btn-primary" name="bidBtn">Add new bid</button>
+                                        </div>
+                                    </form>
+                                </div>
+                                {% endif %}
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        
+            
+            <div style="margin-left: 15px; margin-top: 10px; max-width: 500px;">
+                <h4 class="display-4" id="description_title">Comments Section</h4>
+                <div style="max-width: 500px;">
+                    <div>
+                        <ul class="comments">
+                            {% for comment in comments %}
+                                <li>
+                                    <div class="comment">
+                                        <div class="comment_text">
+                                            {{comment.comment}}
+                                            <p style="text-align: end;">
+                                                by <b>{{comment.user}}</b>.
+                                                {{comment.date}}
+                                            </p> 
+                                            
+                                        </div>
+                                    </div>
+                                </li>
+                            {% empty %}
+                                <div class="alert alert-info" role="alert">
+                                    No comments yet
+                                </div>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% if user.is_authenticated %}
+                        <form action="{% url 'listing' listing.category listing.id %}" method="POST">
+                            {% csrf_token %}
+                            {{ commentForm.as_ul }}
+                            <div style="padding-top: 5px;">
+                                <button type="submit" class="btn btn-primary" name="commentBtn">Submit</button>
+                            </div>
+                        </form>
                     {% endif %}
                 </div>
             </div>
         </div>
-
-
-        <div style="margin-left: 15px; margin-top: 10px; max-width: 500px;">
-            <h4 class="display-4" id="description_title">Comments Section</h4>
-
-            <div>
-                <ul class="comments">
-                    {% for comment in comments %}
-                        <li>
-                            <div class="comment">
-                                <div class="comment_text">
-                                    {{comment.comment}}
-                                    <p style="text-align: end;">
-                                        by <b>{{comment.user}}</b>.
-                                        {{comment.date}}
-                                    </p> 
-                                    
-                                </div>
-                            </div>
-                        </li>
-                    {% empty %}
-                        <div class="alert alert-info" role="alert">
-                            No comments yet
-                        </div>
-                    {% endfor %}
-                </ul>
-            </div>
-
-            <div style="max-width: 500px;">
-                <form action="{% url 'listing' listing.category listing.id %}" method="POST">
-                    {% csrf_token %}
-                    {{ commentForm.as_ul }}
-                    <div style="padding-top: 5px;">
-                        <button type="submit" class="btn btn-primary" name="commentBtn">Submit</button>
-                    </div>
-                </form>
-            </div>
-    
-        {% endif %}
-        </div>
-    </div>
-    
-    
-    
-{%  endblock %}
+    </div>  
+{% endblock %}
