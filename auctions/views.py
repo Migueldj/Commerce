@@ -225,7 +225,13 @@ def listing(request,category_name,listing_id):
             bidForm = BidForm(request.POST or None)
             if bidForm.is_valid():
                 bid = bidForm.cleaned_data['bid']     
-                if bid > higherBidNumber:  
+                if bid > higherBidNumber and bidsSoFar > 0:  
+                    newBid = bidForm.save(commit = False)
+                    newBid.user = request.user
+                    newBid.listing = listing
+                    newBid.save()
+                    return HttpResponseRedirect(reverse("listing", kwargs={'category_name': listing.category,'listing_id':listing.id}))
+                elif bidsSoFar == 0 and bid == higherBidNumber:
                     newBid = bidForm.save(commit = False)
                     newBid.user = request.user
                     newBid.listing = listing
